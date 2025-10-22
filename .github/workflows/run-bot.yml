@@ -1,0 +1,34 @@
+name: Run Discord Bot
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours (UTC)
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350    # at most ~5h50m per run
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run bot
+        env:
+          DISCORD_TOKEN: ${{ secrets.MTQzMDQ4NjI1ODYxODA3MzEzOQ.GlP6Je.6KeKAeGg6JplMktnUXEaqUp5EKKDA51hnNFFuo }}
+        run: |
+          # keep the bot running in foreground; workflow will end when job times out or finishes
+          python bot.py
